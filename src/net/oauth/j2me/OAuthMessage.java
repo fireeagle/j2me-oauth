@@ -404,6 +404,35 @@ public class OAuthMessage {
 
         return encodedMessage;
     }
+    
+    /**
+     * Returns an Authorization header for the OAuthMessage.
+     *
+     * This header can be used instead of putting the OAuth parameters
+     * in the query string.
+     *
+     * @see OAuth 1.0 specification 5.4.1
+     */
+    public String getAuthorizationHeader() {
+        OAuthParameterEncoder encoder = new OAuthParameterEncoder();
+        Hashtable oauthParams = this.convertToKeyValuePairs();
+        StringBuffer builder = new StringBuffer();
+        builder.append("OAuth ");
+        
+        // Loop through all of the key/value pairs and create the authorization header
+        for(Enumeration e = oauthParams.keys(); e.hasMoreElements();) {
+            String key = (String)e.nextElement();
+            String value = (String)oauthParams.get(key);
+            
+            builder.append(key + "=" + "\"" + encoder.encode(value) + "\"");
+            
+            if(e.hasMoreElements()) {
+                builder.append(", ");
+            }
+        }
+        
+        return builder.toString();
+    }
 
     public Hashtable convertToKeyValuePairs() {
         System.out.println("in convertToKeyValuePairs");
